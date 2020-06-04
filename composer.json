@@ -10,14 +10,12 @@
     ],
     "minimum-stability": "dev",
     "require": {
-    "php" : ">=7.2"
+        "php" : ">=7.2",
+        "laravel/ui": "^2.0",
     },
     "require-dev": {
         "phpunit/phpunit" : "~8.0",
         "orchestra/testbench": "^6.0@dev"
-    },
-    "require": {
-        "laravel/ui": "^2.0",
     },
     "autoload": {
         "psr-4": {
