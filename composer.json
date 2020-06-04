@@ -1,6 +1,6 @@
 {
-    "name": "bellpi/hub-users",
-    "description": "Paquete para administracion usuarios bellpi",
+    "name": "magdalenamedio/hub-users-package",
+    "description": "",
     "type": "library",
     "authors": [
         {
