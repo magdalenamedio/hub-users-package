@@ -98,4 +98,4 @@ Diríijase a la siguiente url de host del proyecto http://example.test/login
 Si ya ha sido notificado por el administrador del paquete con su usuario y contraseña puede acceder con estas configuraciones previamente hechas.
 
 ## License
-[MIT](https://choosealicense.com/licenses/mit/)
+[MIT](./LICENSE.md)
