@@ -41,4 +41,32 @@
         </li>
       @endforelse
   </ul>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="nav navbar-nav ml-auto">
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+        @if(request()->is('home*'))
+          <li class="dropdown-item" href="{{ route('logout') }}"
+         onclick="event.preventDefault();
+                         document.getElementById('logout-form').submit();">
+            {{ __('Cerrar Sesiòn') }}
+          </li>
+        @else  
+          @forelse($user->profiles as $profile_user)
+              <li class="dropdown-item" href="{{route('dashboard',$profile_user)}}">{{$profile_user->name}}</li>
+           @empty
+             <li class="dropdown-item" href="">Sin perfiles asignados</li>
+           @endforelse
+           <li class="dropdown-item" href="{{ route('logout') }}"
+           onclick="event.preventDefault();
+                           document.getElementById('logout-form').submit();">
+              {{ __('Cerrar Sesiòn') }}
+          </li>
+        @endif  
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
+      </div>  
+     </li>
+    </ul>
+  </div>
 </nav>
