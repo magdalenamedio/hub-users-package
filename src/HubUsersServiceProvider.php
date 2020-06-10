@@ -54,7 +54,6 @@ class HubUsersServiceProvider extends ServiceProvider
     {
       
       $connection = Config::get($name_connection);
-    
       Config::set('database.default', $connection);
       
     }

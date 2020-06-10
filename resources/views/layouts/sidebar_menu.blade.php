@@ -23,6 +23,21 @@
   <ul class="list-unstyled components">
      <p></p>
      <p></p>
+      <li>
+      <a class="dropdown-toggle" data-toggle="collapse" href="#submenu"><i class="fas fa-id-badge"></i> Perfiles</a>
+      <ul class="collapse list-unstyled" id="submenu">
+           @forelse($user->profiles as $profile_user)
+              <li>
+               <a  href="{{route('dashboard',$profile_user)}}">{{$profile_user->name}}
+               </a>
+             </li>
+           @empty
+             <li>
+              <a href="#">Sin perfiles asignados</a>
+            </li>
+           @endforelse
+      </ul>
+    </li>
      <li class="{{ (request()->is('home*')) ? 'active' : '' }}">
         <a  href="{{route('home')}}"><i class="fas fa-home"></i><span> Inicio</span></a>
       </li>
@@ -40,33 +55,16 @@
           <a  href=""><i class="fas fa-cubes"></i><span> Sin modulos asignados</span></a>
         </li>
       @endforelse
+     
+       <li class="" href="{{ route('logout') }}">
+       <a href="#"
+        onclick="event.preventDefault();
+            document.getElementById('logout-form').submit();">
+        <i class="fas fa-power-off"></i>{{ __(' Cerrar Sesiòn') }}
+      </a>
+      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
+      </form>
+    </li>
   </ul>
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="nav navbar-nav ml-auto">
-      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-        @if(request()->is('home*'))
-          <li class="dropdown-item" href="{{ route('logout') }}"
-         onclick="event.preventDefault();
-                         document.getElementById('logout-form').submit();">
-            {{ __('Cerrar Sesiòn') }}
-          </li>
-        @else  
-          @forelse($user->profiles as $profile_user)
-              <li class="dropdown-item" href="{{route('dashboard',$profile_user)}}">{{$profile_user->name}}</li>
-           @empty
-             <li class="dropdown-item" href="">Sin perfiles asignados</li>
-           @endforelse
-           <li class="dropdown-item" href="{{ route('logout') }}"
-           onclick="event.preventDefault();
-                           document.getElementById('logout-form').submit();">
-              {{ __('Cerrar Sesiòn') }}
-          </li>
-        @endif  
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-            @csrf
-        </form>
-      </div>  
-     </li>
-    </ul>
-  </div>
 </nav>

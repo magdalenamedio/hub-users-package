@@ -21,6 +21,16 @@
   </div>
   <!-- sidebar-user-header  -->
   <ul class="list-unstyled components">
-    
+    <p></p>
+      <li class="" href="{{ route('logout') }}">
+       <a href="#"
+        onclick="event.preventDefault();
+                     document.getElementById('logout-form').submit();">
+        <i class="fas fa-power-off"></i>{{ __(' Cerrar Sesiòn') }}
+      </a>
+      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
+      </form>
+    </li>
   </ul>
 </nav>

@@ -42,10 +42,10 @@ class HubUser extends Model
     }  
 
      public function services(){
-        $relation = $this->belongsToMany(Service::class, 'profile_user','user_id','service_id');
+        $relation = $this->belongsToMany(Service::class, 'profile_user','hub_user_id','service_id');
 
         $relation->getQuery()->getQuery()
-            ->joins[0]->table = \DB::raw('(SELECT DISTINCT user_id,service_id FROM profile_user) as profile_user');
+            ->joins[0]->table = \DB::raw('(SELECT DISTINCT hub_user_id,service_id FROM profile_user) as profile_user');
 
         return $relation; 
 

@@ -41,12 +41,14 @@ class HomeController extends Controller
 
     public function dashboard(LocalProfile $profile)
     {
+
         HubUsers::setConnection('hub-users-databases.local-connection');
         $user=LocalUser::find(auth()->user()->id);
         $profile=LocalProfile::find($profile->id);
         $modules=LocalModule::where('service_id',$profile['service_id'])->get();
-        $service=LocalService::find($profile['service_id']);
-        return view('hub-users::home',compact('user','service','profile','modules'));
+        $service=LocalService::find($profile->service_id);
+        $services=LocalService::all();
+        return view('hub-users::home',compact('user','service','services','profile','modules'));
     }
 
 

@@ -33,12 +33,15 @@ class BridgeAppController extends controller {
 	public function bridgeToApp(Profile $profile){
 		$host = request()->getSchemeAndHttpHost();
 		$user=User::find(auth()->user()->id);
-		$modules=Module::where('service_id',$profile->service_id)->get();
 		$service=Service::find($profile->service_id);
-		$profile_modules=Profile::with('available_modules')->find($profile->id);
+		
 		if($host == $service->url){
-			$this->updateModels($user,$service,$profile,$modules,$profile_modules->available_modules);
-			return redirect()->away($service->url.'/dashboard/'.$profile->id);	
+			if($user){
+				$this->updateModels($user,$profile);
+				return redirect()->away($service->url.'/dashboard/'.$profile->id);
+			}else{
+				return back()->with('warning','No se ha podido autenticar el usuario');
+			}	
 		}
 		else{
 			$url=$service->url.'/login';
@@ -51,7 +54,7 @@ class BridgeAppController extends controller {
 
 			/*dd($response);*/
 			if($response==200){
-				$this->updateModels($user,$service,$profile,$modules,$profile_modules->available_modules);
+				$this->updateModels($user,$profile);
 				return redirect()->away($service->url.'/dashboard/'.$profile->id);
 			}else{
 				return back()->with('warning','No se ha podido establecer conexión');
@@ -59,15 +62,25 @@ class BridgeAppController extends controller {
 		}
 	}
 
-	private function updateModels($user,$service,$profile,$modules,$available_modules){
+	public function updateModels($user,$profile){
+		$modules=Module::where('service_id',$profile->service_id)->get();
+		$profile_modules=Profile::with('available_modules')->find($profile->id);
+		$available_modules=$profile_modules->available_modules;
+		$service=Service::find($profile->service_id);
+		$services=Service::all();
 		HubUsers::setConnection('hub-users-databases.local-connection');
 		$user_hub=LocalUser::find($user->id);
 		LocalUser::updateOrCreate(['id'=>$user->id],$user->toArray());
-		LocalService::updateOrCreate(['id'=>$service->id],$service->toArray());
+		
+		foreach ($services as $_service) {
+			LocalService::updateOrCreate(['id'=>$_service->id],$_service->toArray());
+		}
+		
 		LocalProfile::updateOrCreate(['id'=>$profile->id],$profile->toArray());
 		foreach ($modules as $module) {
 			LocalModule::updateOrCreate(['id'=>$module->id],$module->toArray());		
 		}
+		
 		$user_hub->profiles()->syncWithOutDetaching([$profile->id=>['service_id'=>$service->id]]);
 		$profile_local=LocalProfile::find($profile->id);
 		$profile_local->available_modules()->detach();

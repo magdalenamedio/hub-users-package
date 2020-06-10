@@ -1,7 +1,7 @@
 <?php
 return [
  	'guards' => [
-        'hub' => [
+        'hub_users' => [
             'driver' => 'session',
             'provider' => 'hub_users',
         ]
