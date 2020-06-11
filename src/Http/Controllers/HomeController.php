@@ -5,7 +5,6 @@ namespace Bellpi\HubUsers\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Bellpi\HubUsers\Models\Service;
-use Bellpi\HubUsers\Models\User;
 use Bellpi\HubUsers\Facades\HubUsers;
 
 use App\Service as LocalService;
@@ -33,7 +32,7 @@ class HomeController extends Controller
     public function index()
     {
        
-        $user=User::find(auth()->user()->id);
+        $user=auth()->user();
         $services=Service::all();
 
         return view('hub-users::launch', compact('user','services'));

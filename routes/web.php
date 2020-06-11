@@ -20,8 +20,7 @@ Route::group(['middleware' => ['web']], function () {
 	Route::get('/email/resend', 'Auth\VerificationController@resend')->name('verification.resend');
 });
 
-Route::group(['middleware' => ['web','auth']], function () {
-	//dd(config('hub-users-auth.guards.hub_users.provider'));
+Route::group(['middleware' => ['web','auth:hub_users']], function () {
 	Route::get('/home', 'HomeController@index')->name('home');
 	Route::get('/brigde/{profile}', 'BridgeAppController@bridgeToApp')->name('brigde');
 	Route::get('/dashboard/{profile}', 'HomeController@dashboard')->name('dashboard');

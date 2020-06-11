@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Controller;
 use Bellpi\HubUsers\Models\Service;
-use Bellpi\HubUsers\Models\User;
+use Bellpi\HubUsers\Models\HubUser;
 use Bellpi\HubUsers\Models\Profile;
 use Bellpi\HubUsers\Models\Module;
 
@@ -32,7 +32,7 @@ class BridgeAppController extends controller {
   	
 	public function bridgeToApp(Profile $profile){
 		$host = request()->getSchemeAndHttpHost();
-		$user=User::find(auth()->user()->id);
+		$user=HubUser::find(auth()->user()->id);
 		$service=Service::find($profile->service_id);
 		
 		if($host == $service->url){

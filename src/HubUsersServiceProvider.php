@@ -39,13 +39,11 @@ class HubUsersServiceProvider extends ServiceProvider
             return new ConnectionsController;
         });
 
-
         $router = $this->app['router'];
-        $router->pushMiddlewareToGroup('hub_users', Http\Middleware\Authenticate::class);
-
+        $router->pushMiddlewareToGroup('hub-users-profiles', Http\Middleware\CheckProfiles::class);
+        $router->pushMiddlewareToGroup('hub-users-dbconnection', Http\Middleware\LocalConnection::class);
 
         $this->mergeConfigFrom($this->basePath('config/dbconfig.php'),'hub-users-databases'); 
-        $this->mergeConfigFrom($this->basePath('config/auth.php'),'hub-users-auth');
          
     }
 
@@ -54,8 +52,24 @@ class HubUsersServiceProvider extends ServiceProvider
     {
       
       $connection = Config::get($name_connection);
-      Config::set('database.default', $connection);
-      
+      $default_connection = Config::set('database.default', $connection);
+
+      try {
+            \DB::connection()->getPdo();
+            if(\DB::connection()->getDatabaseName()){
+                    \DB::connection()->getDatabaseName();
+            }else{
+                die("No se puede encontrar base de datos. Revise su configuración.");  
+            }     
+        }catch (\Exception $e) {
+                $connection = Config::get('hub-users-databases.local-connection');
+                $default_connection = Config::set('database.default', $connection);
+                if(\DB::connection()->getDatabaseName()){
+                     \DB::connection()->getDatabaseName();
+                }else{
+                    die("No se puede encontrar base de datos. Revise su configuración.");
+                }
+        }
     }
     
     protected function basePath($path=''){
