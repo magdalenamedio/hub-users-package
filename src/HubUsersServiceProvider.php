@@ -14,8 +14,6 @@ class HubUsersServiceProvider extends ServiceProvider
 
         $this->LoadMigrationsFrom($this->basePath('database/migrations'));
 
-        $this->setConnection('hub-users-databases.package-connection');
-
         $this->publishes([$this->basePath('resources/assets')=>public_path('vendor/hub-users')
         ],'hub-users-assets');
 
@@ -29,47 +27,22 @@ class HubUsersServiceProvider extends ServiceProvider
         $this->publishes([__DIR__.'/AppModels'=>base_path('/app')
         ],'hub-users-models');
 
-
     }
 
     public function register()
     {
-
         $this->app->bind('hub-users',function(){
             return new ConnectionsController;
         });
 
+
+
         $router = $this->app['router'];
-        $router->pushMiddlewareToGroup('hub-users-profiles', Http\Middleware\CheckProfiles::class);
+        $router->aliasMiddleware('hub-users-modules', Http\Middleware\CheckModules::class);
+        $router->aliasMiddleware('hub-users-profiles', Http\Middleware\CheckProfiles::class);
         $router->pushMiddlewareToGroup('hub-users-dbconnection', Http\Middleware\LocalConnection::class);
 
         $this->mergeConfigFrom($this->basePath('config/dbconfig.php'),'hub-users-databases'); 
-         
-    }
-
-    
-    public function setConnection($name_connection)
-    {
-      
-      $connection = Config::get($name_connection);
-      $default_connection = Config::set('database.default', $connection);
-
-      try {
-            \DB::connection()->getPdo();
-            if(\DB::connection()->getDatabaseName()){
-                    \DB::connection()->getDatabaseName();
-            }else{
-                die("No se puede encontrar base de datos. Revise su configuración.");  
-            }     
-        }catch (\Exception $e) {
-                $connection = Config::get('hub-users-databases.local-connection');
-                $default_connection = Config::set('database.default', $connection);
-                if(\DB::connection()->getDatabaseName()){
-                     \DB::connection()->getDatabaseName();
-                }else{
-                    die("No se puede encontrar base de datos. Revise su configuración.");
-                }
-        }
     }
     
     protected function basePath($path=''){

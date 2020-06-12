@@ -3,6 +3,7 @@ namespace Bellpi\HubUsers\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+
 class HubUser extends Model
 {
 
@@ -18,6 +19,6 @@ class HubUser extends Model
             ->joins[0]->table = \DB::raw('(SELECT DISTINCT user_id,service_id FROM profile_user) as profile_user');
 
         return $relation; 
-
-    } 
+    }  
+    
 }

@@ -31,7 +31,9 @@ class BridgeAppController extends controller {
 	 }
   	
 	public function bridgeToApp(Profile $profile){
+
 		$host = request()->getSchemeAndHttpHost();
+		HubUsers::setConnection('hub-users-databases.package-connection');
 		$user=HubUser::find(auth()->user()->id);
 		$service=Service::find($profile->service_id);
 		
@@ -63,6 +65,7 @@ class BridgeAppController extends controller {
 	}
 
 	public function updateModels($user,$profile){
+		HubUsers::setConnection('hub-users-databases.package-connection');
 		$modules=Module::where('service_id',$profile->service_id)->get();
 		$profile_modules=Profile::with('available_modules')->find($profile->id);
 		$available_modules=$profile_modules->available_modules;

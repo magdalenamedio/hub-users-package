@@ -21,7 +21,8 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+
+        $this->middleware('hub-users-profiles:Administrado')->only('dashboard');
     }
 
     /**
@@ -31,17 +32,17 @@ class HomeController extends Controller
      */
     public function index()
     {
-       
+        HubUsers::setConnection('hub-users-databases.package-connection');
         $user=auth()->user();
         $services=Service::all();
 
         return view('hub-users::launch', compact('user','services'));
     }
 
+
+
     public function dashboard(LocalProfile $profile)
     {
-
-        HubUsers::setConnection('hub-users-databases.local-connection');
         $user=LocalUser::find(auth()->user()->id);
         $profile=LocalProfile::find($profile->id);
         $modules=LocalModule::where('service_id',$profile['service_id'])->get();

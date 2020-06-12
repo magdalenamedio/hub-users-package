@@ -5,6 +5,7 @@ namespace Bellpi\HubUsers\Http\Controllers\Auth;
 use Bellpi\HubUsers\RouteServiceProvider;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Bellpi\HubUsers\Facades\HubUsers;
 use Illuminate\View\View;
 
 class LoginController extends Controller
@@ -41,6 +42,7 @@ class LoginController extends Controller
 
     public function showLoginForm(): View
     {
+        HubUsers::setConnection('hub-users-databases.package-connection');
         return view('hub-users::auth.login');
     }
 }

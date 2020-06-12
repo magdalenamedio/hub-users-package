@@ -13,4 +13,6 @@ class Profile extends Model
 	public function available_actions(){
     	return $this->belongsToMany(Action::class,'action_profile')->withTimeStamps();   
 	} 
+
+	
 }

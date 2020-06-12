@@ -1,9 +1,6 @@
 <?php
 namespace Bellpi\HubUsers\Http\Middleware;
-use Bellpi\HubUsers\Facades\HubUsers;
-
 use Closure;
-
 class CheckProfiles
 {
     /**
@@ -13,8 +10,29 @@ class CheckProfiles
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
-    {  
-        return $next($request);
-    }
+    //Captar el rol del usuario para poder redirigir 
+        public function handle($request, Closure $next)
+        {
+    
+          //Excluir del array las parametros request y closure, para obtener los parametros que se definen en el middleware de cada contralador
+          
+          $profiles = array_slice(func_get_args(), 2);
+          
+        
+            
+          //Comprobar que el hasRoles trae un valor boleano verdadero de ser al contrario retorna a un 403 
+
+           
+          if(auth()->user()->hasProfiles($profiles))
+          {
+             return $next($request);
+          }
+
+         if ($request->ajax()) {
+            return response('Unauthorized.', 401);
+          }
+
+          return abort(401);
+       
+        }   
 }

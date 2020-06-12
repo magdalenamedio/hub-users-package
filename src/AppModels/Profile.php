@@ -16,4 +16,16 @@ class Profile extends Model
 	public function available_actions(){
     	return $this->belongsToMany(Action::class,'action_profile')->withTimeStamps();   
 	} 
+
+	public function hasModules(array $modules){
+
+        foreach($modules as $module){
+            foreach ($this->available_modules as $_module ) {
+               if ($module->slug === $_module){
+                    return true;
+               } 
+            }
+        } 
+        return false;   
+    }
 }

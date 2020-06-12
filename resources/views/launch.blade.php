@@ -34,7 +34,7 @@
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-{{$service->id}}" x-placement="bottom-start">
                                  @forelse($user->profiles as $profile)
                                    @if($profile->pivot->service_id == $service->id)
-                                    <a class="dropdown-item" href="{{route('brigde',['profile'=>$profile])}}"></i>Ingresar como {{$profile->name}}</a>
+                                    <a class="dropdown-item" href="{{route('brigde',['profile'=>$profile])}}">{{$profile->name}}</a>
                                    @endif 
                                   @empty 
                                    <a class="dropdown-item" href="#"></i>Sin perfiles asignados</a>
