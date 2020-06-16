@@ -29,7 +29,7 @@ class CheckProfiles
           }
 
          if ($request->ajax()) {
-            return response('Unauthorized.', 401);
+            return response('No autorizado.', 401);
           }
 
           return abort(401);

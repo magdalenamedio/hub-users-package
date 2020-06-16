@@ -36,10 +36,9 @@ class BridgeAppController extends controller {
 		HubUsers::setConnection('hub-users-databases.package-connection');
 		$user=HubUser::find(auth()->user()->id);
 		$service=Service::find($profile->service_id);
-		
 		if($host == $service->url){
 			if($user){
-				$this->updateModels($user,$profile);
+				$this->updateModels($user, $profile);
 				return redirect()->away($service->url.'/dashboard/'.$profile->id);
 			}else{
 				return back()->with('warning','No se ha podido autenticar el usuario');
@@ -54,10 +53,8 @@ class BridgeAppController extends controller {
 
 			$response = $this->httpPost($url,$data);	
 
-			/*dd($response);*/
 			if($response==200){
-				$this->updateModels($user,$profile);
-				return redirect()->away($service->url.'/dashboard/'.$profile->id);
+				return redirect()->away($service->url.'/brigde/'.$profile->id);
 			}else{
 				return back()->with('warning','No se ha podido establecer conexión');
 			} 	
@@ -66,11 +63,13 @@ class BridgeAppController extends controller {
 
 	public function updateModels($user,$profile){
 		HubUsers::setConnection('hub-users-databases.package-connection');
-		$modules=Module::where('service_id',$profile->service_id)->get();
+
+		$modules=Module::where('service_id',$profile->service_id)->get();	
 		$profile_modules=Profile::with('available_modules')->find($profile->id);
 		$available_modules=$profile_modules->available_modules;
 		$service=Service::find($profile->service_id);
 		$services=Service::all();
+
 		HubUsers::setConnection('hub-users-databases.local-connection');
 		$user_hub=LocalUser::find($user->id);
 		LocalUser::updateOrCreate(['id'=>$user->id],$user->toArray());

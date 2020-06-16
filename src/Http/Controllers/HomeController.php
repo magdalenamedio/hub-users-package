@@ -21,8 +21,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-
-        $this->middleware('hub-users-profiles:Administrado')->only('dashboard');
+        
     }
 
     /**

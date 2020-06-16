@@ -21,8 +21,20 @@ class HubUsersServiceProvider extends ServiceProvider
         ],'hub-users-config');
 
         $this->publishes([
-            $this->basePath('resources/views')=>resource_path('views/vendor/hub-users')
-        ],'hub-users-views');
+            $this->basePath('resources/views/auth')=>resource_path('views/vendor/hub-users/auth')
+        ],'hub-users-views-auth');
+
+        $this->publishes([
+            $this->basePath('resources/views/layouts')=>resource_path('views/vendor/hub-users/layouts')
+        ],'hub-users-views-layouts');
+
+        $this->publishes([
+            $this->basePath('resources/views/home.blade.php')=>resource_path('views/vendor/hub-users')
+        ],'hub-users-views-home');
+
+        $this->publishes([
+            $this->basePath('resources/views/launch.blade.php')=>resource_path('views/vendor/hub-users')
+        ],'hub-users-views-launch');
 
         $this->publishes([__DIR__.'/AppModels'=>base_path('/app')
         ],'hub-users-models');
@@ -35,12 +47,9 @@ class HubUsersServiceProvider extends ServiceProvider
             return new ConnectionsController;
         });
 
-
-
         $router = $this->app['router'];
         $router->aliasMiddleware('hub-users-modules', Http\Middleware\CheckModules::class);
         $router->aliasMiddleware('hub-users-profiles', Http\Middleware\CheckProfiles::class);
-        $router->pushMiddlewareToGroup('hub-users-dbconnection', Http\Middleware\LocalConnection::class);
 
         $this->mergeConfigFrom($this->basePath('config/dbconfig.php'),'hub-users-databases'); 
     }

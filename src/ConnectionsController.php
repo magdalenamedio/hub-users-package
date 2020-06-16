@@ -8,7 +8,7 @@ class ConnectionsController{
 	public function setConnection($name_connection)
     {
 
-	  $connection = Config::get($name_connection);
+	    $connection = Config::get($name_connection);
       Config::set('database.default', $connection);
      
       try {
