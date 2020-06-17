@@ -8,5 +8,7 @@
     <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <i class="fas fa-align-justify"></i>
     </button>
-    @include('hub-users::templates.splash')
+     @if(!request()->is('home*'))
+      @include('hub-users::templates.splash')
+    @endif  
 </nav>

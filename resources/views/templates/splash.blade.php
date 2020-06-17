@@ -18,7 +18,7 @@
                     @if($user->services->contains($service->id)) 
                        <div class="btn-group">
                            <div class="dropdown-submenu">
-                              <a class="btn btn-primary btn-white py-1 px-3 mt-2 dropdown-toggle" id="dropdownMenuLink-{{$service->id}}" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ingresar</a>
+                              <a class="btn btn-primary btn-white dropdown-toggle" id="dropdownMenuLink-{{$service->id}}" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ingresar</a>
                               <div class="dropdown-menu" aria-labelledby="dropdownMenuLink-{{$service->id}}" x-placement="bottom-start">
                                @forelse($user->profiles as $profile)
                                  @if($profile->pivot->service_id == $service->id)

@@ -33,7 +33,6 @@ class BridgeAppController extends controller {
 	public function bridgeToApp(Profile $profile){
 
 		$host = request()->getSchemeAndHttpHost();
-		HubUsers::setConnection('hub-users-databases.package-connection');
 		$user=HubUser::find(auth()->user()->id);
 		$service=Service::find($profile->service_id);
 		if($host == $service->url){
@@ -62,7 +61,7 @@ class BridgeAppController extends controller {
 	}
 
 	public function updateModels($user,$profile){
-		HubUsers::setConnection('hub-users-databases.package-connection');
+		
 
 		$modules=Module::where('service_id',$profile->service_id)->get();	
 		$profile_modules=Profile::with('available_modules')->find($profile->id);
@@ -71,9 +70,9 @@ class BridgeAppController extends controller {
 		$services=Service::all();
 
 		HubUsers::setConnection('hub-users-databases.local-connection');
-		$user_hub=LocalUser::find($user->id);
+
 		LocalUser::updateOrCreate(['id'=>$user->id],$user->toArray());
-		
+		$user_hub=LocalUser::find($user->id);
 		foreach ($services as $_service) {
 			LocalService::updateOrCreate(['id'=>$_service->id],$_service->toArray());
 		}
@@ -82,14 +81,20 @@ class BridgeAppController extends controller {
 		foreach ($modules as $module) {
 			LocalModule::updateOrCreate(['id'=>$module->id],$module->toArray());		
 		}
-		
-		$user_hub->profiles()->syncWithOutDetaching([$profile->id=>['service_id'=>$service->id]]);
+
+		$this->seedProfiles($user_hub,$profile,$service,$available_modules);
+  	}	
+
+  	public function seedProfiles($user,$profile,$service,$available_modules){
+		HubUsers::setConnection('hub-users-databases.local-connection');
+		$user_local=LocalUser::find($user->id);
 		$profile_local=LocalProfile::find($profile->id);
+		$user_local->profiles()->syncWithOutDetaching([$profile->id=>['service_id'=>$service->id]]);
 		$profile_local->available_modules()->detach();
 	    if(count($available_modules) > 0){ 
 	      foreach ($available_modules as $_module) {
 	          $profile_local->available_modules()->attach([$_module->id=>['service_id'=>$profile->service_id]]);
 	      }
 	    }
-  	}		
+  	}	
 }
