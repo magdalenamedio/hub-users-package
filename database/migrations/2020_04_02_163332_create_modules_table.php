@@ -17,6 +17,7 @@ class CreateModulesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name',45);
             $table->string('description');
+            $table->string('slug',50);
             $table->bigInteger('service_id')->unsigned();
             $table->timestamps();
 
