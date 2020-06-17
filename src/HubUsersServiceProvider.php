@@ -39,6 +39,8 @@ class HubUsersServiceProvider extends ServiceProvider
         $this->publishes([__DIR__.'/AppModels'=>base_path('/app')
         ],'hub-users-models');
 
+        $this->setConnection('hub-users-databases.package-connection');
+
     }
 
     public function register()
@@ -52,6 +54,30 @@ class HubUsersServiceProvider extends ServiceProvider
         $router->aliasMiddleware('hub-users-profiles', Http\Middleware\CheckProfiles::class);
 
         $this->mergeConfigFrom($this->basePath('config/dbconfig.php'),'hub-users-databases'); 
+    }
+
+    public function setConnection($name_connection)
+    {
+
+      $connection = Config::get($name_connection);
+      $default_connection = Config::set('database.default', $connection);
+
+        try {
+            \DB::connection()->getPdo();
+            if(\DB::connection()->getDatabaseName()){
+                \DB::connection()->getDatabaseName();
+            }else{
+                die("No se puede encontrar base de datos. Revise su configuración.");  
+            }     
+        }catch (\Exception $e) {
+            $connection = Config::get('hub-users-databases.local-connection');
+            $default_connection = Config::set('database.default', $connection);
+            if(\DB::connection()->getDatabaseName()){
+                 \DB::connection()->getDatabaseName();
+            }else{
+                die("No se puede encontrar base de datos. Revise su configuración.");
+            }
+        }    
     }
     
     protected function basePath($path=''){

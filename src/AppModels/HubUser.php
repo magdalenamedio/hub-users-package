@@ -52,10 +52,9 @@ class HubUser extends Authenticatable
     } 
 
     public function hasProfiles(array $profiles){
-
-        foreach($profiles as $profile){
+        foreach($profiles as $_profile){
             foreach ($this->profiles as $profile ) {
-               if ($this->profile->name === $profile){
+               if ($profile->name === $_profile){
                     return true;
                } 
             }
