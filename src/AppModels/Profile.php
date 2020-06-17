@@ -17,15 +17,14 @@ class Profile extends Model
     	return $this->belongsToMany(Action::class,'action_profile')->withTimeStamps();   
 	} 
 
-	public function hasModules(array $modules){
+	public function hasModule(object $module){
 
-        foreach($modules as $module){
-            foreach ($this->available_modules as $_module ) {
-               if ($module->slug === $_module){
-                    return true;
-               } 
-            }
-        } 
+        foreach ($this->available_modules as $valid_module ) {
+           if ($valid_module->slug === $module->slug){
+                return true;
+           } 
+        }
+        
         return false;   
     }
 }
