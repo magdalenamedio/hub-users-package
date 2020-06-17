@@ -72,18 +72,82 @@ Agrege en su raiz del proyecto en el directorio config.database el siguiente arr
             ]) : [],
         ],
 ```
-Luego de estar instalado el paquete ejecute
+En su proyecto en el directorio config.auth  agregue los siguientes guards y providers
 ```bash
-php artisan vendor:publish
+'guards' => [
+        .......
+        
+        'hub_users' => [
+            'driver' => 'session',
+            'provider' => 'hub_users',
+        ],
+      
+ ],
+ 
+ 'providers' => [
+       .......
+       
+        'hub_users' => [
+            'driver' => 'eloquent',
+            'model' => App\HubUser::class,
+        ],
+      
+    ],
+```
+Modifique su configuración default en su archivo config.auth
+```bash
+'defaults' => [
+        'guard' => 'hub_users',
+        'passwords' => 'users',
+    ],
 ```
 
-Elija las siguientes opciones de publicacion del hub de usuarios
-``` bash
-  [xx] Tag: hub-users-assets
-  [xx] Tag: hub-users-config
-  [xx] Tag: hub-users-models
-  [xx] Tag: hub-users-views
+Ejecute las migraciones del paquete
+
+```bash
+php artisan migrate
 ```
+
+Elija las siguientes opciones de publicacion del hub de usuarios:
+
+Debera agregar los modelos que vienen del paquete
+``` bash
+
+php artisan vendor:publish
+[xx] Tag: hub-users-models
+```
+
+Para modificar assets('estos quedaran en la raiz public/vendors de su directorio')
+``` bash
+  php artisan vendor:publish
+  [xx] Tag: hub-users-assets
+```
+Para modificar configuraciones de sus nombres de array de conexiones a base de datos
+``` bash
+  php artisan vendor:publish
+  [xx] Tag: hub-users-config
+``` 
+Para modificar vistas del paquete de login 
+``` bash
+  php artisan vendor:publish
+  [xx] Tag: hub-users-views-auth
+``` 
+  
+Para modificar vistas del paquete de layouts 
+``` bash
+  php artisan vendor:publish
+  [xx] Tag: hub-users-views-layouts
+``` 
+
+Para modificar vistas del paquete de launch y home(ruta dashoard)  
+``` bash
+  php artisan vendor:publish
+  [xx] Tag: hub-users-views-home
+  
+   php artisan vendor:publish
+  [xx] Tag: hub-users-views-launch
+``` 
+
 Verifique en  su raiz de proyecto y en el directorio routes.web que las siguientes rutas no esten habilitadas
 
 ```bash
@@ -97,5 +161,91 @@ Diríijase a la siguiente url de host del proyecto http://example.test/login
 
 Si ya ha sido notificado por el administrador del paquete con su usuario y contraseña puede acceder con estas configuraciones previamente hechas.
 
+# Middleware-autenticación
+Para proteger autenticación de sus rutas con el paquete debe incluir lo siguiente al array de sus middlewares
+
+```bash
+midleware('xxxx','auth:hub_users')
+```
+
+
+# Relaciones
+Puede verificar las relaciones del usuario haciendo lo siguiente en su controlador
+
+```bash
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class SomeController extends Controller
+{
+  
+    public function someFunction()
+    {
+        $user=auth()->user();
+        $user->services;//plataformas bellpi habilitadas para el usuario
+        $user->profiles;
+        return view('someView',compact('user','profiles)) 
+    }
+}
+```
+
+# Rutas
+Puede agregar nombre a sus rutas segun el slug que tenga en el modelo Module;
+
+```bash
+/routes.web
+
+Route::get('/someRoute','SomeController@index')->name('slug del modulo');
+```
+en su vista
+```bash
+/resources.views
+@forelse($profiles as $profile)
+    @forelse($profile->available_modules as $module)
+      <a href="{{$module->slug}}">{{$module->name}}</a>
+    @empty
+      <p>Sin modulos asignados</p>
+    @endforelse
+  @empty
+  <p>Sin perfiles asignados</p>
+ @endforelse  
+```
+
+# Middleware-controlador
+
+Agregue un constructor a su controlador para agregar seguridad de perfiles y modulos de la siguiente manera
+
+```bash
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class SomeController extends Controller
+{
+    public function __construct()
+    {
+       $this->middleware(['hub-users-profiles:Administrador','hub-users-modules:accounts']);
+    }
+  
+    public function someFunction()
+    {
+      ........ 
+    }
+}
+```
+Tomara el nombre del perfil de relacion que tenga el usuario en $user->profiles:
+```bash
+hub-users-profiles:'$profile->name'
+```
+
+Tomara el slug del modulo de relacion que tenga el perfil en $profile->available_modules:
+```bash
+hub-users-modules:'$module->slug'
+```
 ## License
 [MIT](./LICENSE.md)
