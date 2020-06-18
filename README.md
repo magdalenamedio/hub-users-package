@@ -102,17 +102,16 @@ Modifique su configuración default en su archivo config.auth
     ],
 ```
 
-Ejecute las migraciones del paquete
+Ejecute las migraciones del paquete agregandole al comando de php artisan el nombre del array de su conexión local por default
 
 ```bash
-php artisan migrate
+php artisan migrate --database mi_conexion
 ```
 
 Elija las siguientes opciones de publicacion del hub de usuarios:
 
-Debera agregar los modelos que vienen del paquete
+Debera agregar los modelos que vienen del paquete:
 ``` bash
-
 php artisan vendor:publish
 [xx] Tag: hub-users-models
 ```
@@ -161,11 +160,17 @@ Diríijase a la siguiente url de host del proyecto http://example.test/login
 
 Si ya ha sido notificado por el administrador del paquete con su usuario y contraseña puede acceder con estas configuraciones previamente hechas.
 
+Puede utilizar como base para implementacion las vistas que vienen publicadas en el paquete, estas se encontraran en la ruta:
+
+```bash
+resources/vendors/hub-users/
+```
+
 # Middleware-autenticación
 Para proteger autenticación de sus rutas con el paquete debe incluir lo siguiente al array de sus middlewares
 
 ```bash
-midleware('xxxx','auth:hub_users')
+[midleware=>['xxxx','auth:hub_users']]
 ```
 
 
@@ -179,33 +184,58 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+use App\Modules;
+use App\Profiles;
+
 class SomeController extends Controller
 {
   
     public function someFunction()
     {
         $user=auth()->user();
-        $user->services;//plataformas bellpi habilitadas para el usuario
-        $user->profiles;
-        return view('someView',compact('user','profiles)) 
+        
+        $modules=Modules::all(); // Lista modulos de la plataforma en la que este autenticado
+        $profiles=Profile::all(); // Lista perfiles registradas en la plataforma
+        
+        /*  Info para vistas
+          $user->profiles;  //perfiles habilitados para el usuario
+          $profile->available_modules  //modulos habilitados para el perfil
+        */
+        return view('some-view',compact('user','profiles','modules')) 
     }
 }
 ```
 
 # Rutas
-Puede agregar nombre a sus rutas segun el slug que tenga en el modelo Module;
+Puede agregar nombre a sus rutas segun el slug que tenga en el modelo Module:
 
 ```bash
 /routes.web
 
 Route::get('/someRoute','SomeController@index')->name('slug del modulo');
 ```
-en su vista
+en la  vista podriamos mirar la información del usuario asi:
 ```bash
-/resources.views
-@forelse($profiles as $profile)
-    @forelse($profile->available_modules as $module)
-      <a href="{{$module->slug}}">{{$module->name}}</a>
+/resources.views.some-view.blade.php
+
+<p>{{$user}}</p>
+
+<--Listar Perfiles--->
+ @forelse($profiles as $profile)
+      @if($user->profiles->contains($profile->id)
+       <--Redireccionamiento a dashboard del perfil--->
+        <a href="{{route('brigde'),$profile->id}}">{{$profile->id}}</a>
+      @endif  
+  @empty
+  <p>Sin perfiles asignados</p>
+ @endforelse  
+ 
+<--Listar Modulos--->
+@forelse($modules as $module)
+    @forelse($user->profiles as $profile)
+      @if($profile->available_modules->contains($module->id))
+        <a href="{{$module->slug}}">{{$module->name}}</a>
+      @endif  
     @empty
       <p>Sin modulos asignados</p>
     @endforelse
@@ -213,8 +243,33 @@ en su vista
   <p>Sin perfiles asignados</p>
  @endforelse  
 ```
+# Correlación base de datos:
+Al estar compartiendo información dentro de su aplicación las bases de datos deben coexistir para su funcionamiento, puede hacer  lo siguiente en cada uno de los controladores para mantener su conexión local:
 
-# Middleware-controlador
+```bash
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Bellpi\HubUsers\Facades\HubUsers;
+
+class SomeController extends Controller
+{
+    public function __construct()
+    {
+        $this->connection = HubUsers::setConnection('hub-users-databases.local-connection');
+    }
+  
+    public function someFunction()
+    {
+      ........ 
+    }
+}
+```
+Con esto la información de su base de datos local persitira.
+
+# Middleware-controlador-seguridad
 
 Agregue un constructor a su controlador para agregar seguridad de perfiles y modulos de la siguiente manera
 
@@ -224,11 +279,13 @@ Agregue un constructor a su controlador para agregar seguridad de perfiles y mod
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Bellpi\HubUsers\Facades\HubUsers;
 
 class SomeController extends Controller
 {
     public function __construct()
     {
+       $this->connection = HubUsers::setConnection('hub-users-databases.local-connection');
        $this->middleware(['hub-users-profiles:Administrador','hub-users-modules:accounts']);
     }
   
@@ -247,5 +304,14 @@ Tomara el slug del modulo de relacion que tenga el perfil en $profile->available
 ```bash
 hub-users-modules:'$module->slug'
 ```
+
+# Splash
+
+El paquete traera por default un splash que servira para comunicar entre otras plataformas de bellpi, puede hacer uso de el de la siquiente forma en las vistas de su proyecto:
+
+```bash
+@include('hub-users::templates.splash')
+```
+
 ## License
 [MIT](./LICENSE.md)
