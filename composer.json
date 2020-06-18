@@ -1,5 +1,5 @@
 {
-    "name": "bellpi/hub-users-package",
+    "name": "magdalenamedio/hub-users-package",
     "description": "Paquete que permite enlazar a usuarios bellpi y sus platafomas",
     "type": "library",
     "license":"MIT",
